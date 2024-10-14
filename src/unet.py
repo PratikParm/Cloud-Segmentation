@@ -11,9 +11,9 @@ import time
 class Conv2DBlock(nn.Module):
     def __init__(self, in_channels, out_channels, bottleneck=False):
         super(Conv2DBlock, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=out_channels//2, kernel_size=(3, 3), padding=1)
-        self.bn1 = nn.BatchNorm2d(num_features=out_channels//2)
-        self.conv2 = nn.Conv2d(in_channels=out_channels//2, out_channels=out_channels, kernel_size=(3, 3), padding=1)
+        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=out_channels // 2, kernel_size=(3, 3), padding=1)
+        self.bn1 = nn.BatchNorm2d(num_features=out_channels // 2)
+        self.conv2 = nn.Conv2d(in_channels=out_channels // 2, out_channels=out_channels, kernel_size=(3, 3), padding=1)
         self.bn2 = nn.BatchNorm2d(num_features=out_channels)
         self.relu = nn.ReLU()
         self.bottleneck = bottleneck
@@ -30,12 +30,16 @@ class Conv2DBlock(nn.Module):
 class UpConv2DBlock(nn.Module):
     def __init__(self, in_channels, res_channels=0, last_layer=False, num_classes=None):
         super(UpConv2DBlock, self).__init__()
-        assert (last_layer == False and num_classes == None) or (last_layer == True and num_classes != None), 'Invalid arguments'
-        self.upconv1 = nn.ConvTranspose2d(in_channels=in_channels, out_channels=in_channels, kernel_size=(2, 2), stride=2)
+        assert (last_layer == False and num_classes == None) or (
+                    last_layer == True and num_classes != None), 'Invalid arguments'
+        self.upconv1 = nn.ConvTranspose2d(in_channels=in_channels, out_channels=in_channels, kernel_size=(2, 2),
+                                          stride=2)
         self.relu = nn.ReLU()
         self.bn = nn.BatchNorm2d(num_features=in_channels // 2)
-        self.conv1 = nn.Conv2d(in_channels=in_channels + res_channels, out_channels=in_channels // 2, kernel_size=(3, 3), padding=1)
-        self.conv2 = nn.Conv2d(in_channels=in_channels // 2, out_channels=in_channels // 2, kernel_size=(3, 3), padding=1)
+        self.conv1 = nn.Conv2d(in_channels=in_channels + res_channels, out_channels=in_channels // 2,
+                               kernel_size=(3, 3), padding=1)
+        self.conv2 = nn.Conv2d(in_channels=in_channels // 2, out_channels=in_channels // 2, kernel_size=(3, 3),
+                               padding=1)
         self.last_layer = last_layer
         if last_layer:
             self.conv3 = nn.Conv2d(in_channels=in_channels // 2, out_channels=num_classes, kernel_size=1)
@@ -63,7 +67,8 @@ class UNet2D(nn.Module):
         self.bottleNeck = Conv2DBlock(in_channels=level_3_chnls, out_channels=bottleneck_channel, bottleneck=True)
         self.s_block3 = UpConv2DBlock(in_channels=bottleneck_channel, res_channels=level_3_chnls)
         self.s_block2 = UpConv2DBlock(in_channels=level_3_chnls, res_channels=level_2_chnls)
-        self.s_block1 = UpConv2DBlock(in_channels=level_2_chnls, res_channels=level_1_chnls, num_classes=num_classes, last_layer=True)
+        self.s_block1 = UpConv2DBlock(in_channels=level_2_chnls, res_channels=level_1_chnls, num_classes=num_classes,
+                                      last_layer=True)
 
     def forward(self, x):
         # Analysis path forward feed
@@ -71,14 +76,11 @@ class UNet2D(nn.Module):
         out, residual_level2 = self.a_block2(out)
         out, residual_level3 = self.a_block3(out)
         out, _ = self.bottleNeck(out)
-
         # Synthesis path forward feed
         out = self.s_block3(out, residual_level3)
         out = self.s_block2(out, residual_level2)
         out = self.s_block1(out, residual_level1)
-
         out = torch.sigmoid(out)
-
         return out
 
 
