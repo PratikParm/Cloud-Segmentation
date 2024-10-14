@@ -25,7 +25,7 @@ def main():
     # Hyperparameters
     INITIAL_LR = 1e-3
     BATCH_SIZE = 16
-    EPOCHS = 3
+    EPOCHS = 1
 
     logger.info("Hyperparameters:\n"
                 f'Initial Learning Rate: {INITIAL_LR}\n'

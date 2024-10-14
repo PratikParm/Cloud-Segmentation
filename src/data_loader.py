@@ -56,7 +56,7 @@ def get_dataloaders(image_dir, label_dir, val_split, test_split, batch_size):
     logger.info(f'Total data files: {len(image_files)}')
 
     # Split the dataset
-    train_images, test_images, train_labels, test_labels = train_test_split(image_files, label_files, test_size=test_split, random_state=42)
+    train_images, test_images, train_labels, test_labels = train_test_split(image_files[:100], label_files[:100], test_size=test_split, random_state=42)
     train_images, val_images, train_labels, val_labels = train_test_split(train_images, train_labels, test_size=val_split, random_state=42)  # 0.25 * 0.8 = 0.2
 
     # Define transformations
