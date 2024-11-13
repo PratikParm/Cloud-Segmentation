@@ -1,3 +1,4 @@
+import array
 import os
 import logging
 from torch.utils.data import Dataset
@@ -6,6 +7,7 @@ from torchvision import transforms
 from sklearn.model_selection import train_test_split
 from PIL import Image
 
+
 # Set up the logger
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -13,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class CloudDataset(Dataset):
-    def __init__(self, data_files, label_files, transform_image=None, transform_label=None):
+    def __init__(self, data_files: array, label_files: array, transform_image=None, transform_label=None):
         super(CloudDataset, self).__init__()
         self.transform_image = transform_image
         self.transform_label = transform_label
@@ -56,7 +58,7 @@ def get_dataloaders(image_dir, label_dir, val_split, test_split, batch_size):
     logger.info(f'Total data files: {len(image_files)}')
 
     # Split the dataset
-    train_images, test_images, train_labels, test_labels = train_test_split(image_files[:500], label_files[:500],
+    train_images, test_images, train_labels, test_labels = train_test_split(image_files, label_files,
                                                                             test_size=test_split, random_state=42)
     train_images, val_images, train_labels, val_labels = train_test_split(train_images, train_labels,
                                                                           test_size=val_split,
